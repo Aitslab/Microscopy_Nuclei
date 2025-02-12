@@ -1,0 +1,255 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Full pipeline &mdash; Microscopy Nuclei 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Evaluation" href="Evaluation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Microscopy Nuclei
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Steps:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Environment.html">Conda Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Environment.html#apptainer-container">Apptainer container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Preprcoessing.html">Preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Train_UNet.html">U-Net training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Train_HoVerNet.html">HoVer-Net training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Evaluation.html">Evaluation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Full pipeline</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#download-and-extract">Download and Extract</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#image-list">Image list</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-prediction-script">Run Prediction script</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#area-and-number-of-nuclei">Area and Number of Nuclei</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualization">Visualization</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Microscopy Nuclei</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Full pipeline</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Pipeline.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="full-pipeline">
+<h1>Full pipeline<a class="headerlink" href="#full-pipeline" title="Link to this heading"></a></h1>
+<p>After conducting accurate annotations published in <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S2352340922009726">Nuclei</a> and <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S2352340924011107">Cytosol</a>,
+training U-Net and HoVer-Net models for segmenting the nuclei channel, we have compared the top 3 best models from each architecture and at the end we have used the best U-Net model that we have trained on
+our own annotated images as well as some images from <a class="reference external" href="https://bbbc.broadinstitute.org/">BBBC</a> image set.
+The model’s performance on test set were validated where it had 85% F1-score on 90% overlapping threshold and 88% average Jaccard index.</p>
+<p>The experiment were conducted in two Oxidative stress (A, B) and non-oxiditive stress (C,D) groups each group has one repetition all saved in 79 groups for almost 18000 genes.
+The status of each group of raw data and how we proceeded to analyse is summarized in progress_log/plateProgress_done.xlsx file.
+Some of plates were missing or there were several copies. We had to deal with missing or repeated data.</p>
+<p>The overall process for each plate is as follows:</p>
+<ol class="arabic simple">
+<li><p>Download from swestore</p></li>
+<li><p>Run extract_conversion.py script over plates to extract only d0 channel.</p></li>
+<li><p>Normalize them to 8bit images using bash command</p></li>
+<li><p>Save the names in 4_filelist folder  and remove .C01 from  the folder and only keep .png ones (6144 images in each full plate)</p></li>
+<li><p>Copy  and run prediction model over them</p></li>
+<li><p>Run area_size.py script over them and copy the files to A, or B, or C, or D</p></li>
+<li><p>Run the plot and visualization scripts over all of them</p></li>
+</ol>
+<section id="download-and-extract">
+<h2>Download and Extract<a class="headerlink" href="#download-and-extract" title="Link to this heading"></a></h2>
+<p>For downloading plates from Swestore, we have used:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>lftp<span class="w"> </span>https://username@webdav.swestore.se/snic/folder/
+</pre></div>
+</div>
+<p>For downloading whole plate we used:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>get<span class="w"> </span>plate_number1.tar.gz<span class="w"> </span>plate_number2.tar.gz<span class="w"> </span>...
+</pre></div>
+</div>
+<p>For extracting and converting the format of images we have used “bfconvert” function of <a class="reference external" href="https://docs.openmicroscopy.org/bio-formats/5.7.1/users/comlinetools/index.html">bftools</a> command line tool.</p>
+<p>This is conducted through command line or  preprocessing/extract_conversion.py script and subprocess library.</p>
+<p>The following command should run over images after bfconvert command to normalize images to 8-bit format,</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ls<span class="w"> </span>*.png<span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>file<span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span>convert<span class="w"> </span>file<span class="w"> </span>-auto-level<span class="w">  </span>-depth<span class="w"> </span><span class="m">8</span><span class="w"> </span>-define<span class="w"> </span>quantum:format<span class="o">=</span>unsigned<span class="w"> </span>-type<span class="w"> </span>grayscale<span class="w"> </span>file<span class="p">;</span><span class="w"> </span><span class="k">done</span>
+</pre></div>
+</div>
+<p>or through extract_conversion.py script.</p>
+<p>Besides, We extracted multi plates through :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="k">for</span><span class="w"> </span>FILE<span class="w"> </span><span class="k">in</span><span class="w"> </span>*.tar.gz<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">FILE</span><span class="si">}</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;/&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">3</span>
+<span class="w">    </span>sbatch<span class="w"> </span>-A<span class="w">  </span>project_name<span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>-t<span class="w"> </span><span class="m">5</span>:00:00<span class="w"> </span>--wrap<span class="o">=</span><span class="s2">&quot;python extract_conversion.py  </span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="si">${</span><span class="nv">FILE</span><span class="si">}</span><span class="p">|</span>cut<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;/&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">3</span><span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span>
+<span class="w">    </span>sleep<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="c1"># pause to be kind to the scheduler</span>
+<span class="k">done</span>
+</pre></div>
+</div>
+</section>
+<section id="image-list">
+<h2>Image list<a class="headerlink" href="#image-list" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>ls<span class="w">  </span>*.png<span class="w"> </span>&gt;<span class="w"> </span>../4_filelists/plate_num_names.txt
+</pre></div>
+</div>
+</section>
+<section id="run-prediction-script">
+<h2>Run Prediction script<a class="headerlink" href="#run-prediction-script" title="Link to this heading"></a></h2>
+<p>For running prediction script we have used CPU multi-thread parallel prediction and gpu by adding following parts to the code.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">global</span> <span class="n">model</span>
+<span class="k">global</span> <span class="n">graph</span>
+
+<span class="kn">from</span> <span class="nn">concurrent.futures</span> <span class="kn">import</span> <span class="n">ProcessPoolExecutor</span><span class="p">,</span> <span class="n">ThreadPoolExecutor</span><span class="p">,</span> <span class="n">as_completed</span>
+<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">cpu_count</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_files_list</span><span class="p">)</span> <span class="k">as</span> <span class="n">image_list</span><span class="p">:</span>
+    <span class="n">image_names_all</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_files</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">image_list</span><span class="p">]</span>
+
+
+
+<span class="n">clear_session</span><span class="p">()</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">model_builder</span><span class="o">.</span><span class="n">get_model_3_class</span><span class="p">(</span><span class="mi">1104</span><span class="p">,</span> <span class="mi">1104</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>                                             
+<span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="s1">&#39;model_14.hdf5&#39;</span><span class="p">)</span>  <span class="c1">## loading best model here from UNet models</span>
+<span class="n">model</span><span class="o">.</span><span class="n">_make_predict_function</span><span class="p">()</span>
+<span class="n">tf</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">graph</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">get_default_graph</span><span class="p">()</span>
+<span class="n">test</span> <span class="o">=</span> <span class="p">[</span><span class="n">prediction_images</span><span class="p">(</span><span class="n">image_names_all</span><span class="p">[</span><span class="n">i_batch</span><span class="o">*</span><span class="mi">128</span><span class="p">:(</span><span class="n">i_batch</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">128</span><span class="p">])</span> <span class="k">for</span> <span class="n">i_batch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">48</span><span class="p">)]</span>  <span class="c1">## use this if you do not want multi-threading</span>
+
+
+<span class="c1">## use this if you want multi-threading</span>
+<span class="n">CPU_LIMIT</span><span class="o">=</span><span class="mi">128</span>  <span class="c1">## This is the cluster limit</span>
+<span class="k">with</span> <span class="n">ThreadPoolExecutor</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">CPU_LIMIT</span><span class="p">,</span><span class="n">cpu_count</span><span class="p">()))</span> <span class="k">as</span> <span class="n">executor</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;befoooooooooooooooooore submit function&#39;</span><span class="p">)</span>
+    <span class="n">futures</span><span class="o">=</span><span class="p">[</span><span class="n">executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">prediction_images</span> <span class="p">,</span><span class="n">image_names_all</span><span class="p">[</span><span class="n">i_batch</span><span class="o">*</span><span class="mi">16</span><span class="p">:(</span><span class="n">i_batch</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">16</span><span class="p">])</span> <span class="k">for</span> <span class="n">i_batch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">384</span><span class="p">)]</span><span class="c1">#range(len(image_names_all))] </span>
+
+    <span class="k">for</span> <span class="n">future</span> <span class="ow">in</span> <span class="n">as_completed</span><span class="p">(</span><span class="n">futures</span><span class="p">):</span>
+        <span class="n">res</span><span class="o">=</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;resssssssssssssuuuuuuuuuuuuuult: &#39;</span><span class="p">,</span><span class="n">res</span><span class="p">)</span>
+ 
+
+</pre></div>
+</div>
+<p>We have also predict several plates using only gpu by</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>run_prediction.py
+</pre></div>
+</div>
+<p>where, we have</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;python prediction.py MFGTMPcx7_170801050001 ../data/4_filelists/MFGTMPcx7_170801050001_names.txt&quot;</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s2">&quot;python prediction.py MFGTMPcx7_170801100001 ../data/4_filelists/MFGTMPcx7_170801100001_names.txt&quot;</span><span class="p">,</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="area-and-number-of-nuclei">
+<h2>Area and Number of Nuclei<a class="headerlink" href="#area-and-number-of-nuclei" title="Link to this heading"></a></h2>
+<p>After running prediction script, for every plate, a “segm” folder was created where the predicted segmentation masks were stored. By running pipeline/plate_script/area_count.py</p>
+<p>We will have a .csv file for each plate where we have three columns as follows.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Pred_Object</p></th>
+<th class="head"><p>Image_name</p></th>
+<th class="head"><p>Area</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>MFGTMPcx7_170525180001_A01f00d0.png</p></td>
+<td><p>141</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>MFGTMPcx7_170525180001_A01f00d0.png</p></td>
+<td><p>1545</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>MFGTMPcx7_170525180001_A01f00d0.png</p></td>
+<td><p>2179</p></td>
+</tr>
+<tr class="row-odd"><td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="visualization">
+<h2>Visualization<a class="headerlink" href="#visualization" title="Link to this heading"></a></h2>
+<p>This then saved and averaged for all wells for each plate and connected to the gene that were knocked-down at that well. The visualization and numercial results are all in
+screen_visualization and results directories.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Evaluation.html" class="btn btn-neutral float-left" title="Evaluation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

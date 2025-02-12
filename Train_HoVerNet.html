@@ -1,0 +1,187 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HoVer-Net training &mdash; Microscopy Nuclei 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Evaluation" href="Evaluation.html" />
+    <link rel="prev" title="U-Net training" href="Train_UNet.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Microscopy Nuclei
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Steps:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Environment.html">Conda Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Environment.html#apptainer-container">Apptainer container</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Preprcoessing.html">Preprocessing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Train_UNet.html">U-Net training</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">HoVer-Net training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Evaluation.html">Evaluation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Pipeline.html">Full pipeline</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Microscopy Nuclei</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">HoVer-Net training</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Train_HoVerNet.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="hover-net-training">
+<h1>HoVer-Net training<a class="headerlink" href="#hover-net-training" title="Link to this heading"></a></h1>
+<p>The code of HoVer-Net taken from</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/vqdang/hover_net.git
+</pre></div>
+</div>
+<p>The data required to be in .mat format as having centeroind points of objects. This has been done through find_middle_point.m script written in MATLaB.</p>
+<p>An example of annotated masks with centric points:</p>
+<p><img alt="annotated" src="_images/img_center.png" /></p>
+<p>The training, prediction and evaluation scripts for HoverNet are as follows:</p>
+<div class="highlight-plaintext notranslate"><div class="highlight"><pre><span></span>HoverNet/
+├── src
+│   ├── find_middle_point.m
+│   ├── extract_patches.py
+│   ├── run_train.py
+│   ├── run_train.sh
+│   ├── run_infer.py
+│   ├── epoch_run.sh
+│   ├── run_infer.sh
+│   ├── plot_train_loss.ipynb
+├── dataset
+│   ├──Train
+│       ├── Images
+│       │       ├──*.png
+│       └── Labels
+│       │       ├──*.mat
+│   ├──Test
+│       ├── Images
+│       │       ├──*.png
+│       └── Labels
+│       │       ├──*.mat
+├── output
+│   ├──epoch_out
+│       ├── json
+│       ├── mat
+│       ├── overlay
+│       ├── qupath
+
+
+</pre></div>
+</div>
+<p>We have run hovernet pytorch version using the conda env provided <a class="reference external" href="https://github.com/vqdang/hover_net.git">here</a>.
+and also updating as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="nv">torch</span><span class="o">==</span><span class="m">1</span>.7.1+cu110<span class="w"> </span><span class="nv">torchvision</span><span class="o">==</span><span class="m">0</span>.8.2+cu110<span class="w"> </span><span class="nv">torchaudio</span><span class="o">===</span><span class="m">0</span>.7.2<span class="w"> </span>-f<span class="w"> </span>https://download.pytorch.org/whl/torch_stable.html
+</pre></div>
+</div>
+<p>extract_patches.py has been used for extracting smaller patches from train set saved as .npy numpy arrays.</p>
+<p>For fine-tuning HoverNet model hovernet_original_consep_notype_tf2pytorch.tar pretrained model were used from pre_models directory.</p>
+<p>We trained hovernet with 130 images (100 from BBBC and 30 from Aits training images) and validated and tested on test and validation set from <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S2352340922009726">here.</a></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#SBATCH --gpus 4</span>
+<span class="c1">#SBATCH -A project_name</span>
+<span class="c1">#SBATCH -t 3:00:00</span>
+<span class="c1">#SBATCH -n 5</span>
+python<span class="w"> </span>run_train.py<span class="w"> </span>--gpu<span class="o">=</span><span class="s1">&#39;0,1,2,3&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>nuclei_results.txt
+</pre></div>
+</div>
+<p>For validating models, we have run run_infer.py function for all models in every epoch.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
+<span class="c1">#SBATCH -n 3 --gpus=2</span>
+<span class="c1">##SBATCH --gpus 10</span>
+<span class="c1">#SBATCH -A project_name</span>
+<span class="c1">#SBATCH -t 30:00:00</span>
+
+<span class="k">for</span><span class="w"> </span>VARIABLE<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="sb">`</span>seq<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">50</span><span class="sb">`</span>
+<span class="k">do</span>
+python<span class="w"> </span>run_infer.py<span class="w"> </span>--model_path<span class="o">=</span><span class="s2">&quot;logs/00/net_epoch=</span><span class="si">${</span><span class="nv">VARIABLE</span><span class="si">}</span><span class="s2">.tar&quot;</span><span class="w"> </span>--model_mode<span class="o">=</span><span class="s1">&#39;original&#39;</span><span class="w"> </span>tile<span class="w"> </span>--input_dir<span class="o">=</span><span class="s1">&#39;../dataset/Test/Images&#39;</span><span class="w"> </span>--output_dir<span class="o">=</span><span class="s2">&quot;output/</span><span class="si">${</span><span class="nv">VARIABLE</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<span class="k">done</span>
+</pre></div>
+</div>
+<p>We have plotted the training MSE loss of HoverNet for segmentation part as follows:</p>
+<p><img alt="MSE_loss" src="_images/MSE_HOverNEt.png" /></p>
+<p>However, for choosing the best model among U-Net models and HoVer-Net models we have used the same evaluation scripts from U-Net repo.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Train_UNet.html" class="btn btn-neutral float-left" title="U-Net training" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Evaluation.html" class="btn btn-neutral float-right" title="Evaluation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
